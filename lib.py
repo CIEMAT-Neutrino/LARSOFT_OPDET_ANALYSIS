@@ -1,15 +1,19 @@
 import uproot
 import numpy as np
 
-def load_larsoft_root(wvf_type,path,root_folder,template,debug=False):
+def load_larsoft_root(wvf_type,path,root_folder,template,label="",debug=False):
     output = dict()
     if wvf_type == "RAW":
         output["PRETRIGGER"] = 98
         output["PEDESTAL"] = 1500
+        if label == "": output["LABEL"] = "RAW"
+        else: output["LABEL"] = label
     
     elif wvf_type == "DEC":
         output["PRETRIGGER"] = 98
         output["PEDESTAL"] = 0
+        if label == "": output["LABEL"] = "DEC"
+        else: output["LABEL"] = label
     
     else:
         output["PRETRIGGER"] = 0
@@ -52,11 +56,11 @@ def load_larsoft_root(wvf_type,path,root_folder,template,debug=False):
             raw_wvf_ch.append(int(wvf_info[3]))
             raw_wvf_ch_num.append(int(wvf_info[5]))
    
-    output["RECO"]["EV"]   = np.asarray(raw_event)    
-    output["RECO"]["CH"]   = np.asarray(raw_wvf_ch)                 
-    output["RECO"]["#WVF"] = np.asarray(raw_wvf_ch_num)                 
-    output["RECO"]["WVF"]    = raw_wvfs 
-    output["RECO"]["WVF_X"]  = raw_wvfs_x 
+    output["RECO"]["EV"]    = np.asarray(raw_event)    
+    output["RECO"]["CH"]    = np.asarray(raw_wvf_ch)                 
+    output["RECO"]["#WVF"]  = np.asarray(raw_wvf_ch_num)                 
+    output["RECO"]["WVF"]   = raw_wvfs
+    output["RECO"]["WVF_X"] = raw_wvfs_x 
 
     try:
         npy_wvfs   = np.asarray(raw_wvfs)
