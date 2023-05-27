@@ -7,6 +7,7 @@ def combine_data_ophit(data,ophit):
     output = dict()
     output["PE"] = []
     output["TIMES"] = []
+    output["WIDTH"] = []
     output["AMP"] = []
     for wvf in range(len(data["RECO"]["CH"])):
         ev = data["RECO"]["EV"][wvf]
@@ -14,6 +15,7 @@ def combine_data_ophit(data,ophit):
         ev_ch_filter = (ophit[ev][ch]["PeakTime"] < data["RECO"]["WVF_FX"][wvf]) & (ophit[ev][ch]["PeakTime"] > data["RECO"]["WVF_IX"][wvf])
         output["AMP"].append(ophit[ev][ch]["Amplitude"][ev_ch_filter])
         output["TIMES"].append(ophit[ev][ch]["PeakTime"][ev_ch_filter])
+        output["WIDTH"].append(ophit[ev][ch]["Width"][ev_ch_filter])
         output["PE"].append(np.sum(ophit[ev][ch]["PE"][ev_ch_filter]))
     return output
 
@@ -21,12 +23,14 @@ def combine_ophit_with_data(data,ophit):
     output = dict()
     output["PE"] = []
     output["TIMES"] = []
+    output["WIDTH"] = []
     output["AMP"] = []
     for wvf in range(len(data["RECO"]["CH"])):
         ev = data["RECO"]["EV"][wvf]
         ch = data["RECO"]["CH"][wvf]
         output["AMP"].append(ophit[ev][ch]["Amplitude"][np.where((ophit[ev][ch]["PeakTime"] < np.max(data["RECO"]["WVF_X"][wvf])) & (ophit[ev][ch]["PeakTime"] > np.min(data["RECO"]["WVF_X"][wvf])))])
         output["TIMES"].append(ophit[ev][ch]["PeakTime"][np.where((ophit[ev][ch]["PeakTime"] < np.max(data["RECO"]["WVF_X"][wvf])) & (ophit[ev][ch]["PeakTime"] > np.min(data["RECO"]["WVF_X"][wvf])))])
+        output["WIDTH"].append(ophit[ev][ch]["Width"][np.where((ophit[ev][ch]["PeakTime"] < np.max(data["RECO"]["WVF_X"][wvf])) & (ophit[ev][ch]["PeakTime"] > np.min(data["RECO"]["WVF_X"][wvf])))])
         output["PE"].append(np.sum(ophit[ev][ch]["PE"][np.where((ophit[ev][ch]["PeakTime"] < np.max(data["RECO"]["WVF_X"][wvf])) & (ophit[ev][ch]["PeakTime"] > np.min(data["RECO"]["WVF_X"][wvf])))]))
     return output
 
@@ -38,7 +42,7 @@ def ophit_data(wvf_path,scaling,label,branches=[],as_df=False,debug=False):
         print(raw["ophitana/PerOpHitTree;1"].keys())
         if branches == []: branch_list = raw["ophitana/PerOpHitTree;1"].keys()
         else: branch_list = branches
-        type_dict = {"EventID":np.int8,"OpChannel":np.int16,"PeakTime":np.float32,"Amplitude":np.float32,"PE":np.float32}
+        type_dict = {"EventID":np.int8,"OpChannel":np.int16,"PeakTime":np.float32,"Amplitude":np.float32,"PE":np.float32,"Width":np.float32}
         for branch in branches:
             ophit[branch] = raw["ophitana/PerOpHitTree;1"][branch].array().to_numpy().astype(type_dict[branch])
     if as_df == True:
@@ -104,14 +108,16 @@ def get_wvf_data(wvf_type,wvf_path,root_folder,max_ev,pedestal,output,template,d
                 except:
                     raw_wvfs_t0[idx] = 0
 
-    output["RECO"]["EV"]     = raw_event    
-    output["RECO"]["CH"]     = raw_wvf_ch                 
-    output["RECO"]["#WVF"]   = raw_wvf_ch_num                 
-    output["RECO"]["WVF"]    = raw_wvfs
-    output["RECO"]["WVF_IX"] = raw_wvfs_ix
-    output["RECO"]["WVF_FX"] = raw_wvfs_fx
-    output["RECO"]["T0"]     = output["SAMPLING"]*1e6*np.argmax(raw_wvfs,axis=1)+raw_wvfs_ix
-    output["RECO"]["AMP"]    = np.max(np.asarray(raw_wvfs),axis=1) - output["PEDESTAL"]
+    output["RECO"]["EV"]      = raw_event    
+    output["RECO"]["CH"]      = raw_wvf_ch                 
+    output["RECO"]["#WVF"]    = raw_wvf_ch_num                 
+    output["RECO"]["WVF"]     = raw_wvfs
+    output["RECO"]["WVF_IX"]  = raw_wvfs_ix
+    output["RECO"]["WVF_FX"]  = raw_wvfs_fx
+    output["RECO"]["T0"]      = output["SAMPLING"]*1e6*np.argmax(raw_wvfs,axis=1)+raw_wvfs_ix
+    output["RECO"]["AMP"]     = np.max(np.asarray(raw_wvfs),axis=1) - output["PEDESTAL"]
+    output["RECO"]["PED"]     = np.mean(np.asarray(raw_wvfs)[:,:80],axis=1) - output["PEDESTAL"]
+    output["RECO"]["STD_PED"] = np.std(np.asarray(raw_wvfs)[:,:80],axis=1) - output["PEDESTAL"]
 
     if wvf_type == "RAW": 
         output["RECO"]["PE"]     = np.sum(raw_wvfs-output["PEDESTAL"],where=raw_wvfs-output["PEDESTAL"] > 0,axis=1)/np.sum(template[template > 0])      

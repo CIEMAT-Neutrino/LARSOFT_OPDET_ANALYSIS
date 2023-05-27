@@ -90,15 +90,28 @@ def update_legend(fig,dict):
     fig.for_each_trace(lambda t: t.update(name = dict[t.name],legendgroup = dict[t.name],hovertemplate = t.hovertemplate.replace(t.name, dict[t.name])))
     return fig
 
-def format_coustom_plotly(fig,fontsize=16,figsize=None,ranges=(None,None),tickformat=(",.1s",",.1s"),tickmode=("auto","auto"),log=(False,False)):
+def format_coustom_plotly(fig,fontsize=16,figsize=None,ranges=(None,None),tickformat=(",.1s",",.1s"),tickmode=("auto","auto"),log=(False,False),facet_titles=None):
     fig.update_layout(template="presentation",font=dict(size=fontsize)) # font size and template
     fig.update_xaxes(showline=True,mirror="ticks",showgrid=True,minor_ticks="inside",tickformat=tickformat[0],tickmode=tickmode[0],range=ranges[0]) # tickformat=",.1s" for scientific notation
     fig.update_yaxes(showline=True,mirror="ticks",showgrid=True,minor_ticks="inside",tickformat=tickformat[1],tickmode=tickmode[1],range=ranges[1]) # tickformat=",.1s" for scientific notation
+    
     if figsize != None:
         fig.update_layout(width=figsize[0],height=figsize[1])
+    
     if log[0]:
         fig.update_xaxes(type="log",tickmode=tickmode[0])
     if log[1]:
         fig.update_yaxes(type="log",tickmode=tickmode[1])
+    
+    if facet_titles is not None:
+        try:
+            for i,title in enumerate(facet_titles):
+                fig.layout.annotations[i].text = title
+        except IndexError:
+            for title in fig.layout.annotations:
+                title.text = title.text.split("=")[1]
+        except TypeError:
+            for title in fig.layout.annotations:
+                title.text = title.text.split("=")[1]
 
     return fig
