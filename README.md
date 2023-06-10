@@ -34,7 +34,7 @@ jupyter notebook
 There are additional notebooks that can be used to visualize the tamples and make wvf simulations.
 
 Include a gif of the notebook here.
-![Wvf and ophit data comparison!](/notebooks/newplot.png "Wvf and ophit data comparison")
+![Wvf and ophit data comparison](newplot.png)
 
 ## TODO
 
