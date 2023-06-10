@@ -90,7 +90,7 @@ def update_legend(fig,dict):
     fig.for_each_trace(lambda t: t.update(name = dict[t.name],legendgroup = dict[t.name],hovertemplate = t.hovertemplate.replace(t.name, dict[t.name])))
     return fig
 
-def format_coustom_plotly(fig,fontsize=16,figsize=None,ranges=(None,None),tickformat=(",.1s",",.1s"),tickmode=("auto","auto"),log=(False,False),facet_titles=None):
+def format_coustom_plotly(fig,fontsize=16,figsize=None,ranges=(None,None),tickformat=(",.2s",",.2s"),tickmode=("auto","auto"),log=(False,False),facet_titles=None):
     fig.update_layout(template="presentation",font=dict(size=fontsize)) # font size and template
     fig.update_xaxes(showline=True,mirror="ticks",showgrid=True,minor_ticks="inside",tickformat=tickformat[0],tickmode=tickmode[0],range=ranges[0]) # tickformat=",.1s" for scientific notation
     fig.update_yaxes(showline=True,mirror="ticks",showgrid=True,minor_ticks="inside",tickformat=tickformat[1],tickmode=tickmode[1],range=ranges[1]) # tickformat=",.1s" for scientific notation
