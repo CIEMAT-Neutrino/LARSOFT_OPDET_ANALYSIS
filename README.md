@@ -33,6 +33,14 @@ jupyter notebook
 
 There are additional notebooks that can be used to visualize the tamples and make wvf simulations.
 
+Include a gif of the notebook here.
+
+## TODO
+
+- [ ] Add a gif of the notebook to the README.md document.
+- [ ] Make the wvfs input more flexible to include any given number of data files.
+- [ ] Add a notebook to simulate wvfs.
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
