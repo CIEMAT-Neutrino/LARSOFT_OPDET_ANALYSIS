@@ -13,6 +13,7 @@ from numba           import jit
 from scipy.optimize  import curve_fit
 from plotly.subplots import make_subplots
 from itertools       import product
+from collections     import defaultdict
 
 from .lib  import *
 from .fit  import *
